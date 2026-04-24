@@ -1,0 +1,544 @@
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>坠了没 · 内容占卜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #faf9f5;
+            font-family: 'Cormorant Garamond', 'Times New Roman', 'Georgia', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, serif;
+            line-height: 1.5;
+            color: #2c2820;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            max-width: 680px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.03), 0 2px 4px rgba(0, 0, 0, 0.02);
+            padding: 2.5rem 2rem 2.8rem;
+            transition: all 0.2s ease;
+        }
+        .start-title {
+            font-size: 2.8rem;
+            font-weight: 500;
+            letter-spacing: -0.3px;
+            color: #1f1b14;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .start-sub {
+            font-size: 1rem;
+            color: #7f6e5b;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .small-note {
+            font-size: 0.8rem;
+            color: #a2917c;
+            text-align: center;
+            line-height: 1.4;
+            max-width: 85%;
+            margin: 0.8rem auto 0;
+        }
+        .double-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.2rem;
+            margin: 2rem 0 1rem;
+        }
+        .primary-btn {
+            background: transparent;
+            border: 1.2px solid #d9cebf;
+            padding: 0.7rem 1.8rem;
+            font-size: 1rem;
+            font-weight: 450;
+            font-family: inherit;
+            color: #3b3226;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #ffffff;
+            min-width: 160px;
+        }
+        .primary-btn:hover {
+            background-color: #f7f3ec;
+            border-color: #b2a187;
+            transform: translateY(-1px);
+        }
+        .accent-btn {
+            border-color: #c7b59e;
+            background: #fffcf7;
+        }
+        .footer-note {
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #c2b6a6;
+            text-align: center;
+            border-top: 1px solid #f0e9e1;
+            padding-top: 1.2rem;
+        }
+        .shake-container {
+            text-align: center;
+            padding: 1rem 0 1.5rem;
+        }
+        .shake-emoji {
+            font-size: 5rem;
+            margin: 1rem 0;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .shake-animation {
+            animation: gentleShake 0.5s ease-in-out 0s 2;
+        }
+        @keyframes gentleShake {
+            0% { transform: translate(1px, 0px) rotate(0deg); }
+            25% { transform: translate(-2px, 1px) rotate(-1deg); }
+            50% { transform: translate(2px, -1px) rotate(1deg); }
+            75% { transform: translate(-1px, 1px) rotate(-0.5deg); }
+            100% { transform: translate(0,0) rotate(0); }
+        }
+        .random-btn {
+            background: #ffffff;
+            border: 1.2px solid #d9cebf;
+            padding: 0.7rem 2rem;
+            font-size: 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            font-family: inherit;
+        }
+        .random-btn:hover {
+            background: #f7f3ec;
+        }
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 450;
+            color: #2f2a22;
+            margin-bottom: 2rem;
+            line-height: 1.35;
+        }
+        .options-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            margin-bottom: 2rem;
+        }
+        .option-btn {
+            background: #ffffff;
+            border: 1px solid #e2d9cf;
+            padding: 0.9rem 1.2rem;
+            text-align: left;
+            font-size: 0.95rem;
+            color: #3e362b;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .option-btn:hover {
+            background: #fcf9f4;
+            border-color: #c9bbaa;
+            transform: translateX(4px);
+        }
+        .result-box {
+            background: #fefaf2;
+            padding: 1.5rem 1.8rem;
+            margin: 1.2rem 0;
+            border-radius: 28px;
+            box-shadow: inset 0 0 0 1px #f0e8de, 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .prescription-name {
+            color: #b1624b;
+            font-weight: 500;
+            font-size: 1.9rem;
+            letter-spacing: -0.2px;
+            margin: 0.5rem 0 0.2rem;
+            font-family: 'Cormorant Garamond', serif;
+        }
+        .tag-line {
+            font-size: 0.8rem;
+            color: #8f7f6b;
+        }
+        .collection-desc {
+            font-size: 0.9rem;
+            color: #5a4f3e;
+            margin-top: 1rem;
+            line-height: 1.4;
+        }
+        .action-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.8rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #ddd2c2;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: inherit;
+            color: #4d4234;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .action-btn:hover {
+            background: #f4efe8;
+        }
+        .secondary {
+            border-color: #cfc5b4;
+            background: white;
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            margin-top: 0.5rem;
+        }
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .divider {
+            margin: 1.5rem 0;
+            border: 0;
+            height: 1px;
+            background: #ebe5d9;
+        }
+        .great-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            background-color: #b1624b;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 550px) {
+            .card { padding: 1.8rem; }
+            .start-title { font-size: 2.2rem; }
+            .question-text { font-size: 1.25rem; }
+            .prescription-name { font-size: 1.5rem; }
+            .double-buttons { flex-direction: column; align-items: center; gap: 0.8rem; }
+            .primary-btn { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+<div class="card" id="app"></div>
+
+<script>
+    // ---------- 合集数据（含B站链接占位符，请替换为真实URL）----------
+    const RESULTS_DB = {
+        chat:        { name: "《闲聊合集》", tags: "杂谈 · 非游戏 · 陪伴向", desc: "日常唠嗑、轻松陪伴，像老友聊天般的治愈时光", biliUrl: "https://space.bilibili.com/45107914/lists/6076525?type=season" },
+        hougong:     { name: "《后宫三千人》", tags: "文字游戏 · 宫斗 · 古风 · 完结", desc: "深宫，是个吃人不吐骨头的地方…", biliUrl: "https://space.bilibili.com/45107914/lists/5111611?type=season" },
+        shengshi:    { name: "《盛世天下》", tags: "文字游戏 · 权谋 · 大女主 · 完结", desc: "开了个龙眼，我还开了个桂圆", biliUrl: "https://space.bilibili.com/45107914/lists/6324693?type=season" },
+        weichi:      { name: "《尉迟恭是什么鬼》", tags: "文字游戏 · 古风欢快 · 未完结", desc: "预警多到标题写不下", biliUrl: "https://space.bilibili.com/45107914/lists/7897202?type=season" },
+        zhiyi:       { name: "《纸嫁衣》", tags: "恐怖解谜 · 中式民俗 · 未完结", desc: "山青青呀路漫漫~", biliUrl: "https://space.bilibili.com/45107914/lists/7297236?type=season" },
+        nvqin:       { name: "《女寝皆是修罗场》", tags: "文字游戏 · 校园 · 欢乐吐槽 · 完结", desc: "你们五个我真选不出来一个", biliUrl: "https://space.bilibili.com/45107914/lists/454013?type=season" },
+        wosihou:     { name: "《我死后的那些天》", tags: "悬疑 · 剧情向 · 现代 · 完结", desc: "和妖刀依旧是伯牙子期", biliUrl: "https://space.bilibili.com/45107914/lists/7661618?type=season" },
+        yiwany:      { name: "《亿万恋人》", tags: "恋爱 · 反套路 · 搞笑吐槽 · 未完结", desc: "把你的钱掏出来，给我一百块", biliUrl: "https://space.bilibili.com/45107914/lists/7847908?type=season" },
+        notmuch:     { name: "《并不十分娱乐圈》", tags: "娱乐圈 · 真实向 · 成长 · 完结", desc: "再见，朝梦露", biliUrl: "https://space.bilibili.com/45107914/lists/5512919?type=season" },
+        star:        { name: "《逆袭之星途闪耀》", tags: "娱乐圈 · 玛丽苏 · 逆袭 · 早期完结", desc: "娱乐圈小助理逆袭当大明星之路顺便谈谈恋爱咯", biliUrl: "https://space.bilibili.com/45107914/lists/488602?type=season" },
+        hongniang:   { name: "《红娘大师》", tags: "恋爱 · 红娘模拟 · 现代 · 完结", desc: "千里姻缘一线牵，红娘大师在身边", biliUrl: "https://space.bilibili.com/45107914/lists/6580157?type=season" },
+        tianchao:    { name: "《天朝相亲图鉴》", tags: "养成 · 相亲 · 现代 · 完结", desc: "鲁猫鲁猫，六狗六狗", biliUrl: "https://space.bilibili.com/45107914/lists/4565738?type=season" },
+        zwdzjs:      { name: "《植物大战僵尸》", tags: "塔防 · 经典 · 休闲 · 短篇", desc: "没带咖啡豆都是主播在让", biliUrl: "https://space.bilibili.com/45107914/lists/1818048?type=season" },
+        luoke:       { name: "《洛克王国》", tags: "大世界 · 宠物养成 · 怀旧 · 单集", desc: "甲鸟吉吉负重一万斤长大", biliUrl: "https://space.bilibili.com/45107914/lists/6637472?type=season" },
+        wzwxq:       { name: "《王者万象棋》", tags: "自走棋 · 轻策略 · 短篇", desc: "逆风如解腻，容易莫催餐", biliUrl: "https://space.bilibili.com/45107914/lists/7757415?type=season" },
+        guojie:      { name: "《过街警卫乔》", tags: "独立游戏 · 魔性搞笑 · 单集", desc: "解决不了问题就解决你", biliUrl: "https://space.bilibili.com/45107914/lists/6492585?type=season" },
+        panpa_single:{ name: "《攀爬动物》P1-3", tags: "物理闯关 · 单人 · 短篇系列", desc: "别笑！你也过不了200m", biliUrl: "https://space.bilibili.com/45107914/lists/7570611?type=season" },
+        panpa_multi: { name: "《攀爬动物》P4", tags: "物理闯关 · 多人互坑 · 短篇", desc: "牛之劲敌 桃米洗菜", biliUrl: "https://www.bilibili.com/video/BV1KQwFzvEUB/?spm_id_from=333.1387.collection.video_card.click" },
+        wzry:        { name: "《王者荣耀》", tags: "MOBA · 开黑 · 竞技 · 系列", desc: "不是技术主播，而是一名勤奋上进的普通中路玩家", biliUrl: "https://space.bilibili.com/45107914/lists/7283638?type=season" },
+        wwqy:        { name: "《无畏契约》", tags: "FPS · 战术射击 · 系列", desc: "正义导师开课", biliUrl: "https://space.bilibili.com/45107914/lists/7474534?type=season" },
+        eyasha:      { name: "《鹅鸭杀》", tags: "社交推理 · 狼人杀 · 欢乐 · 系列", desc: "伪装与欺骗，鹅鸭互杀", biliUrl: "https://space.bilibili.com/45107914/lists/7831532?type=season" },
+        danzai:      { name: "《蛋仔派对》", tags: "派对游戏 · 闯关 · 社交 · 系列", desc: "天赋勤奋汗水努力大心脏！", biliUrl: "https://space.bilibili.com/45107914/lists/7361292?type=season" }
+    };
+    const ALL_COLLECTIONS = Object.values(RESULTS_DB);
+
+    // ---------- 19题测评数据（保持不变）----------
+    const QUESTIONS = [
+        "你正在无聊地刷手机，不小心点进了一个直播。画面里是——",
+        "周末你去朋友家玩，对方问你想一起做什么。你会选——",
+        "你刚追完一部很长的系列，意犹未尽。下一部你大概率会挑——",
+        "你在一个论坛闲逛，看到一条帖子标题很吸引你。它写着——",
+        "深夜你准备买个数字版游戏/视频合集，最后让你下决心付款的往往是——",
+        "午休时间，你只有30分钟放松。你会打开——",
+        "朋友跟你吐槽：“最近看的剧，女主被欺负了100集，最后靠男人翻盘，好气。” 你回应——",
+        "你跟朋友聊起小时候玩过的游戏，你最先想到的画面是——",
+        "长假来了，你打算怎么度过？",
+        "你刷朋友圈，看到有人发：“这游戏我通关了，结局哭了三天。” 你会——",
+        "你在视频网站首页看到一张封面图，最吸引你点进去的是——",
+        "你买游戏或视频合集的习惯是——",
+        "下雨的周日，你一个人在家。最想做的是——",
+        "你在应用商店闲逛，看到一栏“互动故事推荐”。你会更倾向点开哪种简介？",
+        "你跟朋友联机打游戏，连输三把。你会——",
+        "你在抖音刷到一段推送，内容是——",
+        "你更喜欢看哪种类型的实况？",
+        "你打开B站，准备刷完就睡觉。你更可能点开——",
+        "你关注的一个UP主开了一个新坑，第一集就吸引了你，但他说“随缘更新”。你会——"
+    ];
+    const OPTIONS = [
+        ["A. 一个古代庭院，几个穿汉服的女孩正在小声说话，气氛微妙。","B. 一个现代公寓，两个人在沙发上对着手机大笑，茶几上散落着零食袋。","C. 一个昏暗的房间，桌上摊着泛黄的纸，有人低声说：“这扇门不能打开。”","D. 一片空旷的草原，一个人骑着马慢慢走，偶尔停下来看远处的山。"],
+        ["A. “你上次说的那本互动小说还没看完，一起接着看？”","B. “随便找个搞笑小游戏，咱俩轮着玩，看谁更手残。”","C. “开一把排位？输了算我的。”","D. “有没有那种……能自己建房子、养宠物的游戏？我想慢慢玩。”"],
+        ["A. 同一个朝代背景的，最好是后宫或权谋，代入感强。","B. 现代都市题材的，轻松一点，不用太费脑子。","C. 评分很高的悬疑剧，哪怕有点恐怖也愿意试。","D. 随便，先看看最近哪些已经完结了，挑一个分最高的。"],
+        ["A. “扒一扒那届选秀的内幕：你以为的逆袭都是剧本？”","B. “笑死，这游戏里的动物能把自己卡成麻花。”","C. “多年后重温这个童年游戏，我还是打不过第三关。”","D. “如果你是秀女，如何一句话让皇后和贵妃同时怀疑人生？”"],
+        ["A. “这个系列已经完结了，可以一口气看完，不用等。”","B. “看预告片好刺激，我喜欢这种被吓到的感觉。”","C. “评论说特别搞笑，适合睡前放松。”","D. “可以和朋友一起玩/看，正好周末联机。”"],
+        ["A. 一集20分钟的搞笑实况，正好看完。","B. 一个文字游戏的开头，先看看剧情吸不吸引人。","C. 一局快节奏的竞技游戏，速战速决。","D. 放着直播当背景音，闭眼眯一会儿。"],
+        ["A. “我也受不了这种，能不能来个反杀爽文，把霸总送进监狱？”","B. “宫斗剧里才真实，哪有那么多金手指，都是步步为营。”","C. “恐怖片不香吗？直接吓到忘记剧情不合逻辑。”","D. “那我推荐你一个搞笑游戏，绝对不气人。”"],
+        ["A. 一块田里种着各种植物，前面走来一群歪歪扭扭的东西，你紧张地拖动鼠标。","B. 一个开放的大地图，你抓了一只小宠物，给它起名字，带它去打擂台。","C. 几个小人挤在一个屏幕里，你推我一下，我踹你一脚，然后一起掉进坑里。","D. 你控制一个小人独自爬上一座很高的山，总在奇怪的地方卡住。"],
+        ["A. 找个完整的剧情游戏，每天玩一点，慢慢体验。","B. 约朋友每天固定时间联机，快乐互坑。","C. 补完那些标记了很久的悬疑/恐怖系列。","D. 不设计划，刷到什么看什么，随缘。"],
+        ["A. 评论：“求推荐，我也喜欢被虐哭。”","B. 回复：“完结了吗？完结我就冲。”","C. 私信问：“有多恐怖？我不敢一个人玩。”","D. 直接划走，对这类不感兴趣。"],
+        ["A. 一位古装女子站在红墙下，半侧脸，眼神里藏着心事。","B. 两只卡通动物纠缠在一起，肢体严重变形，配上标题“物理老师气哭了”。","C. 暗调画面，一扇旧木门上贴着一张黄纸红字，隐约有手印。","D. 一群卡通角色挤在一个平台上，有的被撞飞，有的在抱头逃跑。"],
+        ["A. 必须等全部更新完，一次性买断。","B. 只要题材对胃口，正在连载也立刻入手。","C. 先看免费部分，追到最新再决定要不要继续。","D. 只买能和朋友一起玩的。"],
+        ["A. 泡杯茶，打开一部古装悬疑剧，慢慢看。","B. 打开直播，听主播聊天，同时做点手工或家务。","C. 把朋友叫上线，打几局游戏。","D. 找一个纯搞笑的小游戏实况，笑一笑。"],
+        ["A. “真实职场生存法则：从实习生到总监，每一步都是选择。”","B. “深宫风雨，你能否活到最后一集？”","C. “女主智商180，专治各种不服，爽就完事了。”","D. “大学宿舍的四人群聊记录被曝光，笑到头掉。”"],
+        ["A. “再来！我就不信了。”","B. “换个游戏吧，玩个合作闯关的。”","C. “不玩了，我自己去玩会单机。”","D. “你们玩，我去看会视频。”"],
+        ["A. “三分钟看完一部宫斗剧，谁害了谁一目了然。”","B. “这游戏里的鸡会功夫，把玩家追着打。”","C. “职业选手第一视角，这波操作你打几分？”","D. “当你试图跟朋友玩合作游戏时……”（翻车集锦）"],
+        ["A. UP主被虐得死去活来，但最后通关。","B. UP主用反直觉的方式过关，全是骚操作。","C. UP主和朋友互坑，输赢无所谓，特好笑。","D. UP主认真讲解剧情，分析每一个伏笔。"],
+        ["A. 一个已经出完所有集数的合集，评论区都在说“神作，一口气看完”。","B. 一个每周更新的系列，上一集结尾留了巨大悬念，新弹幕在催更。","C. 一个标题写着“和朋友玩到凌晨三点，笑出腹肌”的多人游戏实况。","D. 一个只有10分钟的小短片，UP主说“这游戏把我的智商按在地上摩擦”。"],
+        ["A. 果断关注，每次更新第一时间看。","B. 收藏等养肥，一口气看完。","C. 看心情，想起来就看。","D. 不看了，怕坑。"]
+    ];
+    const bonusMap = [
+        [{古风:1,文字剧情:1,情感沉浸:1},{现代:1,搞笑:1,独立休闲:1},{悬疑:1,恐怖:1},{养成模拟:1,单人沉浸:1}],
+        [{文字剧情:1,情感沉浸:1},{独立休闲:1,搞笑:1,短篇:1},{策略竞技:1,多人联机:1},{养成模拟:1,长篇系列:1}],
+        [{古风:1,文字剧情:1,长篇系列:1},{现代:1,搞笑:1},{悬疑:1,恐怖:1,情感沉浸:1},{完结偏好:1}],
+        [{现代:1,反套路:1},{独立休闲:1,搞笑:1,短篇:1},{独立休闲:1,情感沉浸:1},{古风:1,文字剧情:1,反套路:1}],
+        [{完结偏好:1},{恐怖:1,悬疑:1},{搞笑:1,独立休闲:1},{多人联机:1}],
+        [{搞笑:1,短篇:1,独立休闲:1},{文字剧情:1},{策略竞技:1,短篇:1},{}],
+        [{反套路:1,现代:1},{古风:1,情感沉浸:1},{恐怖:1,悬疑:1},{搞笑:1,独立休闲:1}],
+        [{独立休闲:1,搞笑:1,短篇:1},{养成模拟:1,长篇系列:1},{独立休闲:1,搞笑:1,多人联机:1},{独立休闲:1,搞笑:1,单人沉浸:1}],
+        [{文字剧情:1,长篇系列:1,情感沉浸:1},{多人联机:1,搞笑:1},{悬疑:1,恐怖:1},{}],
+        [{情感沉浸:1,文字剧情:1},{完结偏好:1},{恐怖:1},{}],
+        [{古风:1,情感沉浸:1},{独立休闲:1,搞笑:1},{恐怖:1,悬疑:1},{多人联机:1,搞笑:1}],
+        [{完结偏好:1},{未完结可追:1},{},{多人联机:1}],
+        [{古风:1,悬疑:1,情感沉浸:1},{},{多人联机:1,策略竞技:1},{搞笑:1,独立休闲:1,短篇:1}],
+        [{现代:1,情感沉浸:1},{古风:1,文字剧情:1},{反套路:1,现代:1},{现代:1,搞笑:1}],
+        [{策略竞技:1,多人联机:1},{多人联机:1,搞笑:1},{单人沉浸:1},{}],
+        [{古风:1,短篇:1},{独立休闲:1,搞笑:1},{策略竞技:1},{多人联机:1,搞笑:1}],
+        [{情感沉浸:1,长篇系列:1},{搞笑:1,独立休闲:1,反套路:1},{多人联机:1,搞笑:1},{文字剧情:1,悬疑:1}],
+        [{完结偏好:1,文字剧情:1,长篇系列:1},{未完结可追:1,恐怖:1,悬疑:1},{多人联机:1,搞笑:1},{短篇:1,独立休闲:1,搞笑:1}],
+        [{未完结可追:1},{完结偏好:1},{},{完结偏好:1}]
+    ];
+    const DIMS = ["文字剧情","独立休闲","策略竞技","养成模拟","古风","现代","悬疑","恐怖","搞笑","反套路","情感沉浸","完结偏好","未完结可追","短篇","中长篇","长篇系列","单人沉浸","多人联机"];
+    const COLLECTION_WEIGHTS = {
+        "《后宫三千人》":        {文字剧情:3,古风:3,情感沉浸:2,完结偏好:3,长篇系列:3,单人沉浸:3},
+        "《并不十分娱乐圈》":    {文字剧情:3,养成模拟:2,现代:3,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《盛世天下》":          {文字剧情:3,策略竞技:2,古风:3,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《红娘大师》":          {文字剧情:3,养成模拟:2,现代:3,搞笑:2,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《天朝相亲图鉴》":      {文字剧情:3,养成模拟:2,现代:3,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《逆袭之星途闪耀》":    {文字剧情:3,养成模拟:2,现代:3,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《女寝皆是修罗场》":    {文字剧情:3,现代:3,搞笑:2,情感沉浸:2,完结偏好:3,单人沉浸:2},
+        "《我死后的那些天》":    {文字剧情:3,现代:3,悬疑:3,情感沉浸:3,完结偏好:3,单人沉浸:2},
+        "《亿万恋人》":          {文字剧情:3,现代:3,反套路:3,情感沉浸:2,未完结可追:3,单人沉浸:2},
+        "《尉迟恭是什么鬼》":    {文字剧情:3,古风:3,搞笑:3,反套路:2,未完结可追:3,单人沉浸:2},
+        "《纸嫁衣》":            {文字剧情:3,古风:3,恐怖:3,情感沉浸:3,未完结可追:3,单人沉浸:2},
+        "《过街警卫乔》":        {独立休闲:3,搞笑:3,短篇:3,单人沉浸:3},
+        "《攀爬动物》P1-3":      {独立休闲:3,搞笑:3,短篇:3,单人沉浸:3},
+        "《攀爬动物》P4":        {独立休闲:3,搞笑:3,多人联机:3},
+        "《植物大战僵尸》":      {独立休闲:3,策略竞技:2,搞笑:3,短篇:3,单人沉浸:2},
+        "《洛克王国》":          {养成模拟:3,短篇:3,单人沉浸:2},
+        "《王者万象棋》":        {策略竞技:3,短篇:3,单人沉浸:2},
+        "《王者荣耀》":          {策略竞技:3,搞笑:2,长篇系列:3,多人联机:3},
+        "《无畏契约》":          {策略竞技:3,长篇系列:3,多人联机:3},
+        "《鹅鸭杀》":            {策略竞技:2,搞笑:3,长篇系列:2,多人联机:3},
+        "《蛋仔派对》":          {独立休闲:2,搞笑:3,长篇系列:2,多人联机:3}
+    };
+    function computeBestCollection(answers) {
+        let userScores = Object.fromEntries(DIMS.map(d=>[d,0]));
+        for(let i=0;i<answers.length;i++) {
+            let opt = answers[i];
+            if(opt===-1) continue;
+            let bonus = bonusMap[i][opt];
+            if(bonus) for(let [dim,val] of Object.entries(bonus)) userScores[dim] += val;
+        }
+        let best=null, bestScore=-1;
+        for(let [name,weights] of Object.entries(COLLECTION_WEIGHTS)) {
+            let total=0, sumW=0;
+            for(let [dim,w] of Object.entries(weights)) {
+                total += (userScores[dim]||0) * w;
+                sumW += w;
+            }
+            let score = sumW ? total/sumW : 0;
+            if(score>bestScore) { bestScore=score; best=name; }
+        }
+        return best;
+    }
+
+    let state = { screen: 'start', answers: new Array(19).fill(-1), curQuestion: 0 };
+
+    function showGreatToast() {
+        const existing = document.querySelector('.great-toast');
+        if(existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'great-toast';
+        toast.innerText = '❤️ 真心不错之 ❤️';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    function renderStart() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div class="start-title">坠了没</div>
+            <div class="start-sub">大人人，该吃药了</div>
+            <div class="small-note">娱乐性质的小网站。如果你不知道该看什么「坠」的时候，可以来试一试对症下药。<br>根据你当下的状态完成对话，小诊所将为你开具一剂视频处方。</div>
+            <div class="double-buttons">
+                <button class="primary-btn" id="fullTestBtn">别管了，K社！</button>
+                <button class="primary-btn accent-btn" id="luckDrawBtn">遇事不决</button>
+            </div>
+            <div class="footer-note">纯属娱乐 · 对症下药</div>
+        `;
+        document.getElementById('fullTestBtn')?.addEventListener('click', ()=>{
+            state = { screen: 'question', answers: new Array(19).fill(-1), curQuestion: 0 };
+            render();
+        });
+        document.getElementById('luckDrawBtn')?.addEventListener('click', ()=>{
+            state = { screen: 'shake' };
+            render();
+        });
+    }
+
+    function renderShake() {
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div style="text-align:center;">
+                <div class="shake-container">
+                    <div class="shake-emoji" id="shakeEmoji">🏺</div>
+                    <div style="margin: 0.5rem 0 0.8rem; font-size:0.9rem; color:#7f6e5b;">摇一签 · 问前程</div>
+                    <button class="random-btn" id="doShakeBtn">今日无事，不要元子</button>
+                </div>
+                <div class="back-link">
+                    <button class="secondary" id="backStartFromShake">← 回到起点</button>
+                </div>
+                <div class="footer-note">随机一签，随缘而愈</div>
+            </div>
+        `;
+        const btn = document.getElementById('doShakeBtn');
+        const emoji = document.getElementById('shakeEmoji');
+        btn?.addEventListener('click', ()=>{
+            if(emoji) {
+                emoji.classList.add('shake-animation');
+                setTimeout(()=> emoji.classList.remove('shake-animation'), 500);
+            }
+            setTimeout(()=>{
+                const randomResult = ALL_COLLECTIONS[Math.floor(Math.random() * ALL_COLLECTIONS.length)];
+                state = { screen: 'result', resultData: randomResult, fromShake: true };
+                render();
+            }, 500);
+        });
+        document.getElementById('backStartFromShake')?.addEventListener('click', ()=>{
+            state = { screen: 'start' };
+            render();
+        });
+    }
+
+    function renderQuestion() {
+        const q = state.curQuestion;
+        const optsHtml = OPTIONS[q].map((opt, idx) => `<button class="option-btn" data-opt="${idx}">${opt}</button>`).join('');
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div style="margin-bottom:0.5rem; font-size:0.75rem; color:#b3a48f;">第 ${q+1} / ${QUESTIONS.length}</div>
+            <div class="question-text">${QUESTIONS[q]}</div>
+            <div class="options-group" id="optionsGroup">${optsHtml}</div>
+            <div class="back-link"><button class="secondary" id="backStartFromQ">⟳ 重新测评</button></div>
+            <div class="footer-note">选一剂对症之药</div>
+        `;
+        document.querySelectorAll('.option-btn').forEach(btn=>{
+            btn.addEventListener('click',(e)=>{
+                const opt = parseInt(btn.dataset.opt);
+                state.answers[q] = opt;
+                if(q+1 < QUESTIONS.length) {
+                    state.curQuestion++;
+                    render();
+                } else {
+                    const finalName = computeBestCollection(state.answers);
+                    const resultObj = Object.values(RESULTS_DB).find(r=>r.name === finalName) || ALL_COLLECTIONS[0];
+                    state = { screen: 'result', resultData: resultObj, fromShake: false };
+                    render();
+                }
+            });
+        });
+        document.getElementById('backStartFromQ')?.addEventListener('click', ()=>{
+            state = { screen: 'start' };
+            render();
+        });
+    }
+
+    function renderResult() {
+        const res = state.resultData;
+        const biliButton = res.biliUrl ? `<a href="${res.biliUrl}" target="_blank" rel="noopener noreferrer" class="action-btn">▶ 去B站观看</a>` : '';
+        const app = document.getElementById('app');
+        app.innerHTML = `
+            <div style="text-align:center; margin-bottom:1rem;">🩻 坠了没处方笺</div>
+            <div class="result-box">
+                <div class="prescription-name">${res.name}</div>
+                <div class="tag-line">${res.tags}</div>
+                <div class="collection-desc">📖 ${res.desc}</div>
+            </div>
+            <div class="action-group">
+                ${biliButton}
+                <button class="action-btn" id="shareBtn">🔗 转发分享</button>
+                <button class="action-btn" id="restartBtn">🏠 回到起点</button>
+            </div>
+            <div class="footer-note">对症下药，祝您愉快</div>
+        `;
+        document.getElementById('shareBtn')?.addEventListener('click', ()=>{
+            const url = new URL(window.location.href);
+            url.searchParams.set('result', encodeURIComponent(res.name));
+            navigator.clipboard.writeText(url.toString()).then(()=> alert('链接已复制！'));
+        });
+        document.getElementById('restartBtn')?.addEventListener('click', ()=>{
+            state = { screen: 'start' };
+            render();
+        });
+    }
+
+    function render() {
+        if(state.screen === 'start') renderStart();
+        else if(state.screen === 'shake') renderShake();
+        else if(state.screen === 'question') renderQuestion();
+        else if(state.screen === 'result') renderResult();
+    }
+
+    function checkSharedReturn() {
+        const params = new URLSearchParams(window.location.search);
+        if(params.has('result')) {
+            setTimeout(() => {
+                showGreatToast();
+                const cleanUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }, 200);
+        }
+    }
+
+    render();
+    checkSharedReturn();
+</script>
+</body>
+</html>
