@@ -1,9 +1,10 @@
-
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>坠了没 · 内容占卜</title>
+    <title>今天你坠了没</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -41,9 +42,10 @@
         }
         .start-sub {
             font-size: 1rem;
-            color: #7f6e5b;
+            color: #b1624b;
             text-align: center;
             margin-bottom: 1rem;
+            font-weight: 450;
         }
         .small-note {
             font-size: 0.8rem;
@@ -95,11 +97,21 @@
             text-align: center;
             padding: 1rem 0 1.5rem;
         }
-        .shake-emoji {
-            font-size: 5rem;
-            margin: 1rem 0;
-            display: inline-block;
-            transition: transform 0.2s;
+        .shake-img {
+            width: 80%;
+            max-width: 200px;
+            margin: 1rem auto;
+            border-radius: 20px;
+            display: block;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .shake-phrase {
+            margin: 0.8rem 0;
+            font-size: 1rem;
+            color: #7f6e5b;
+            font-style: italic;
         }
         .shake-animation {
             animation: gentleShake 0.5s ease-in-out 0s 2;
@@ -163,28 +175,49 @@
         }
         .prescription-name {
             color: #b1624b;
-            font-weight: 500;
-            font-size: 1.9rem;
+            font-weight: 700;
+            font-size: 2.2rem;
             letter-spacing: -0.2px;
             margin: 0.5rem 0 0.2rem;
             font-family: 'Cormorant Garamond', serif;
         }
         .tag-line {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #8f7f6b;
+            letter-spacing: 0.3px;
+            margin-top: 0.2rem;
         }
         .collection-desc {
-            font-size: 0.9rem;
+            font-size: 1rem;
             color: #5a4f3e;
             margin-top: 1rem;
-            line-height: 1.4;
+            line-height: 1.45;
+        }
+        .cover-placeholder {
+            margin: 1rem 0 0.5rem;
+            background: #ede5d9;
+            border-radius: 20px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a38d73;
+            font-size: 0.8rem;
+            overflow: hidden;
+        }
+        .cover-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
         }
         .action-group {
             display: flex;
-            gap: 1rem;
+            flex-direction: column;
+            gap: 0.8rem;
             margin-top: 1.8rem;
-            justify-content: center;
-            flex-wrap: wrap;
+            align-items: center;
         }
         .action-btn {
             background: transparent;
@@ -196,9 +229,9 @@
             font-family: inherit;
             color: #4d4234;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
+            display: inline-block;
+            width: 80%;
+            text-align: center;
         }
         .action-btn:hover {
             background: #f4efe8;
@@ -208,17 +241,14 @@
             background: white;
             border-radius: 40px;
             padding: 0.5rem 1.2rem;
-            margin-top: 0.5rem;
+            margin: 0.2rem;
         }
         .back-link {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
             margin-top: 1.5rem;
-        }
-        .divider {
-            margin: 1.5rem 0;
-            border: 0;
-            height: 1px;
-            background: #ebe5d9;
+            flex-wrap: wrap;
         }
         .great-toast {
             position: fixed;
@@ -244,9 +274,10 @@
             .card { padding: 1.8rem; }
             .start-title { font-size: 2.2rem; }
             .question-text { font-size: 1.25rem; }
-            .prescription-name { font-size: 1.5rem; }
+            .prescription-name { font-size: 1.8rem; }
             .double-buttons { flex-direction: column; align-items: center; gap: 0.8rem; }
             .primary-btn { width: 80%; }
+            .action-btn { width: 90%; }
         }
     </style>
 </head>
@@ -254,34 +285,53 @@
 <div class="card" id="app"></div>
 
 <script>
-    // ---------- 合集数据（含B站链接占位符，请替换为真实URL）----------
+    // ---------- 合集数据 ----------
     const RESULTS_DB = {
-        chat:        { name: "《闲聊合集》", tags: "杂谈 · 非游戏 · 陪伴向", desc: "日常唠嗑、轻松陪伴，像老友聊天般的治愈时光", biliUrl: "https://space.bilibili.com/45107914/lists/6076525?type=season" },
-        hougong:     { name: "《后宫三千人》", tags: "文字游戏 · 宫斗 · 古风 · 完结", desc: "深宫，是个吃人不吐骨头的地方…", biliUrl: "https://space.bilibili.com/45107914/lists/5111611?type=season" },
-        shengshi:    { name: "《盛世天下》", tags: "文字游戏 · 权谋 · 大女主 · 完结", desc: "开了个龙眼，我还开了个桂圆", biliUrl: "https://space.bilibili.com/45107914/lists/6324693?type=season" },
-        weichi:      { name: "《尉迟恭是什么鬼》", tags: "文字游戏 · 古风欢快 · 未完结", desc: "预警多到标题写不下", biliUrl: "https://space.bilibili.com/45107914/lists/7897202?type=season" },
-        zhiyi:       { name: "《纸嫁衣》", tags: "恐怖解谜 · 中式民俗 · 未完结", desc: "山青青呀路漫漫~", biliUrl: "https://space.bilibili.com/45107914/lists/7297236?type=season" },
-        nvqin:       { name: "《女寝皆是修罗场》", tags: "文字游戏 · 校园 · 欢乐吐槽 · 完结", desc: "你们五个我真选不出来一个", biliUrl: "https://space.bilibili.com/45107914/lists/454013?type=season" },
-        wosihou:     { name: "《我死后的那些天》", tags: "悬疑 · 剧情向 · 现代 · 完结", desc: "和妖刀依旧是伯牙子期", biliUrl: "https://space.bilibili.com/45107914/lists/7661618?type=season" },
-        yiwany:      { name: "《亿万恋人》", tags: "恋爱 · 反套路 · 搞笑吐槽 · 未完结", desc: "把你的钱掏出来，给我一百块", biliUrl: "https://space.bilibili.com/45107914/lists/7847908?type=season" },
-        notmuch:     { name: "《并不十分娱乐圈》", tags: "娱乐圈 · 真实向 · 成长 · 完结", desc: "再见，朝梦露", biliUrl: "https://space.bilibili.com/45107914/lists/5512919?type=season" },
-        star:        { name: "《逆袭之星途闪耀》", tags: "娱乐圈 · 玛丽苏 · 逆袭 · 早期完结", desc: "娱乐圈小助理逆袭当大明星之路顺便谈谈恋爱咯", biliUrl: "https://space.bilibili.com/45107914/lists/488602?type=season" },
-        hongniang:   { name: "《红娘大师》", tags: "恋爱 · 红娘模拟 · 现代 · 完结", desc: "千里姻缘一线牵，红娘大师在身边", biliUrl: "https://space.bilibili.com/45107914/lists/6580157?type=season" },
-        tianchao:    { name: "《天朝相亲图鉴》", tags: "养成 · 相亲 · 现代 · 完结", desc: "鲁猫鲁猫，六狗六狗", biliUrl: "https://space.bilibili.com/45107914/lists/4565738?type=season" },
-        zwdzjs:      { name: "《植物大战僵尸》", tags: "塔防 · 经典 · 休闲 · 短篇", desc: "没带咖啡豆都是主播在让", biliUrl: "https://space.bilibili.com/45107914/lists/1818048?type=season" },
-        luoke:       { name: "《洛克王国》", tags: "大世界 · 宠物养成 · 怀旧 · 单集", desc: "甲鸟吉吉负重一万斤长大", biliUrl: "https://space.bilibili.com/45107914/lists/6637472?type=season" },
-        wzwxq:       { name: "《王者万象棋》", tags: "自走棋 · 轻策略 · 短篇", desc: "逆风如解腻，容易莫催餐", biliUrl: "https://space.bilibili.com/45107914/lists/7757415?type=season" },
-        guojie:      { name: "《过街警卫乔》", tags: "独立游戏 · 魔性搞笑 · 单集", desc: "解决不了问题就解决你", biliUrl: "https://space.bilibili.com/45107914/lists/6492585?type=season" },
-        panpa_single:{ name: "《攀爬动物》P1-3", tags: "物理闯关 · 单人 · 短篇系列", desc: "别笑！你也过不了200m", biliUrl: "https://space.bilibili.com/45107914/lists/7570611?type=season" },
-        panpa_multi: { name: "《攀爬动物》P4", tags: "物理闯关 · 多人互坑 · 短篇", desc: "牛之劲敌 桃米洗菜", biliUrl: "https://www.bilibili.com/video/BV1KQwFzvEUB/?spm_id_from=333.1387.collection.video_card.click" },
-        wzry:        { name: "《王者荣耀》", tags: "MOBA · 开黑 · 竞技 · 系列", desc: "不是技术主播，而是一名勤奋上进的普通中路玩家", biliUrl: "https://space.bilibili.com/45107914/lists/7283638?type=season" },
-        wwqy:        { name: "《无畏契约》", tags: "FPS · 战术射击 · 系列", desc: "正义导师开课", biliUrl: "https://space.bilibili.com/45107914/lists/7474534?type=season" },
-        eyasha:      { name: "《鹅鸭杀》", tags: "社交推理 · 狼人杀 · 欢乐 · 系列", desc: "伪装与欺骗，鹅鸭互杀", biliUrl: "https://space.bilibili.com/45107914/lists/7831532?type=season" },
-        danzai:      { name: "《蛋仔派对》", tags: "派对游戏 · 闯关 · 社交 · 系列", desc: "天赋勤奋汗水努力大心脏！", biliUrl: "https://space.bilibili.com/45107914/lists/7361292?type=season" }
+        chat:        { name: "《闲聊合集》", tags: "杂谈 · 非游戏 · 陪伴向", desc: "日常唠嗑、轻松陪伴，像老友聊天般的治愈时光", biliUrl: "https://space.bilibili.com/45107914/lists/6076525?type=season", cover: "" },
+        hougong:     { name: "《后宫三千人》", tags: "文字游戏 · 宫斗 · 古风 · 完结", desc: "深宫，是个吃人不吐骨头的地方…", biliUrl: "https://space.bilibili.com/45107914/lists/5111611?type=season", cover: "" },
+        shengshi:    { name: "《盛世天下》", tags: "文字游戏 · 权谋 · 大女主 · 完结", desc: "开了个龙眼，我还开了个桂圆", biliUrl: "https://space.bilibili.com/45107914/lists/6324693?type=season", cover: "" },
+        weichi:      { name: "《尉迟恭是什么鬼》", tags: "文字游戏 · 古风欢快 · 未完结", desc: "预警多到标题写不下", biliUrl: "https://space.bilibili.com/45107914/lists/7897202?type=season", cover: "" },
+        zhiyi:       { name: "《纸嫁衣》", tags: "恐怖解谜 · 中式民俗 · 未完结", desc: "山青青呀路漫漫~", biliUrl: "https://space.bilibili.com/45107914/lists/7297236?type=season", cover: "" },
+        nvqin:       { name: "《女寝皆是修罗场》", tags: "文字游戏 · 校园 · 欢乐吐槽 · 完结", desc: "你们五个我真选不出来一个", biliUrl: "https://space.bilibili.com/45107914/lists/454013?type=season", cover: "" },
+        wosihou:     { name: "《我死后的那些天》", tags: "悬疑 · 剧情向 · 现代 · 完结", desc: "和妖刀依旧是伯牙子期", biliUrl: "https://space.bilibili.com/45107914/lists/7661618?type=season", cover: "" },
+        yiwany:      { name: "《亿万恋人》", tags: "恋爱 · 反套路 · 搞笑吐槽 · 未完结", desc: "把你的钱掏出来，给我一百块", biliUrl: "https://space.bilibili.com/45107914/lists/7847908?type=season", cover: "" },
+        notmuch:     { name: "《并不十分娱乐圈》", tags: "娱乐圈 · 真实向 · 成长 · 完结", desc: "再见，朝梦露", biliUrl: "https://space.bilibili.com/45107914/lists/5512919?type=season", cover: "" },
+        star:        { name: "《逆袭之星途闪耀》", tags: "娱乐圈 · 玛丽苏 · 逆袭 · 早期完结", desc: "娱乐圈小助理逆袭当大明星之路顺便谈谈恋爱咯", biliUrl: "https://space.bilibili.com/45107914/lists/488602?type=season", cover: "" },
+        hongniang:   { name: "《红娘大师》", tags: "恋爱 · 红娘模拟 · 现代 · 完结", desc: "千里姻缘一线牵，红娘大师在身边", biliUrl: "https://space.bilibili.com/45107914/lists/6580157?type=season", cover: "" },
+        tianchao:    { name: "《天朝相亲图鉴》", tags: "养成 · 相亲 · 现代 · 完结", desc: "鲁猫鲁猫，六狗六狗", biliUrl: "https://space.bilibili.com/45107914/lists/4565738?type=season", cover: "" },
+        zwdzjs:      { name: "《植物大战僵尸》", tags: "塔防 · 经典 · 休闲 · 短篇", desc: "没带咖啡豆都是主播在让", biliUrl: "https://space.bilibili.com/45107914/lists/1818048?type=season", cover: "" },
+        luoke:       { name: "《洛克王国》", tags: "大世界 · 宠物养成 · 怀旧 · 单集", desc: "甲鸟吉吉负重一万斤长大", biliUrl: "https://space.bilibili.com/45107914/lists/6637472?type=season", cover: "" },
+        wzwxq:       { name: "《王者万象棋》", tags: "自走棋 · 轻策略 · 短篇", desc: "逆风如解腻，容易莫催餐", biliUrl: "https://space.bilibili.com/45107914/lists/7757415?type=season", cover: "" },
+        guojie:      { name: "《过街警卫乔》", tags: "独立游戏 · 魔性搞笑 · 单集", desc: "解决不了问题就解决你", biliUrl: "https://space.bilibili.com/45107914/lists/6492585?type=season", cover: "" },
+        panpa_single:{ name: "《攀爬动物》P1-3", tags: "物理闯关 · 单人 · 短篇系列", desc: "别笑！你也过不了200m", biliUrl: "https://space.bilibili.com/45107914/lists/7570611?type=season", cover: "" },
+        panpa_multi: { name: "《攀爬动物》P4", tags: "物理闯关 · 多人互坑 · 短篇", desc: "牛之劲敌 桃米洗菜", biliUrl: "https://www.bilibili.com/video/BV1KQwFzvEUB/?spm_id_from=333.1387.collection.video_card.click", cover: "" },
+        wzry:        { name: "《王者荣耀》", tags: "MOBA · 开黑 · 竞技 · 系列", desc: "不是技术主播，而是一名勤奋上进的普通中路玩家", biliUrl: "https://space.bilibili.com/45107914/lists/7283638?type=season", cover: "" },
+        wwqy:        { name: "《无畏契约》", tags: "FPS · 战术射击 · 系列", desc: "正义导师开课", biliUrl: "https://space.bilibili.com/45107914/lists/7474534?type=season", cover: "" },
+        eyasha:      { name: "《鹅鸭杀》", tags: "社交推理 · 狼人杀 · 欢乐 · 系列", desc: "伪装与欺骗，鹅鸭互杀", biliUrl: "https://space.bilibili.com/45107914/lists/7831532?type=season", cover: "" },
+        danzai:      { name: "《蛋仔派对》", tags: "派对游戏 · 闯关 · 社交 · 系列", desc: "天赋勤奋汗水努力大心脏！", biliUrl: "https://space.bilibili.com/45107914/lists/7361292?type=season", cover: "" }
     };
     const ALL_COLLECTIONS = Object.values(RESULTS_DB);
 
-    // ---------- 19题测评数据（保持不变）----------
+    // 随机图片列表（可替换为实际图片 URL）
+    const SHAKE_IMAGES = [
+        "1.jpg",   
+        "2,jpg",  
+        "3,jpg",   
+        "4.jpg",   
+        "5.jpg"    
+    ];
+    // 随机短语列表
+    const SHAKE_PHRASES = [
+        "一朵花儿开~就有一朵花儿败~",
+        "当困难来临的时候~请你举起你的左手~",
+        "我是被你囚禁的鸟~已经忘了天有多高~",
+        "每次一想到你~像雨过天晴~",
+        "babe我们的感情好像跳楼机~",
+        "我想过忘记是最后最坏的打算~"
+
+    ];
+
+    // ---------- 19题测评数据 ----------
     const QUESTIONS = [
         "你正在无聊地刷手机，不小心点进了一个直播。画面里是——",
         "周末你去朋友家玩，对方问你想一起做什么。你会选——",
@@ -397,22 +447,50 @@
         if(existing) existing.remove();
         const toast = document.createElement('div');
         toast.className = 'great-toast';
-        toast.innerText = '❤️ 真心不错之 ❤️';
+        toast.innerText = '真心不错之';
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
+    }
+
+    async function shareResultScreenshot(element, resultName) {
+        if (!element) return;
+        try {
+            const canvas = await html2canvas(element, { scale: 2, backgroundColor: '#fefaf2', logging: false });
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const file = new File([blob], 'prescription.png', { type: 'image/png' });
+            const shareData = {
+                title: '坠了没·处方笺',
+                text: `今天${resultName}很适合你！`,
+                files: [file]
+            };
+            if (navigator.canShare && navigator.canShare(shareData)) {
+                await navigator.share(shareData);
+                showGreatToast();
+            } else {
+                const url = new URL(window.location.href);
+                url.searchParams.set('result', encodeURIComponent(resultName));
+                await navigator.clipboard.writeText(url.toString());
+                alert('链接已复制！');
+                showGreatToast();
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                alert('分享失败，可尝试截图保存');
+            }
+        }
     }
 
     function renderStart() {
         const app = document.getElementById('app');
         app.innerHTML = `
             <div class="start-title">坠了没</div>
-            <div class="start-sub">大人人，该吃药了</div>
-            <div class="small-note">娱乐性质的小网站。如果你不知道该看什么「坠」的时候，可以来试一试对症下药。<br>根据你当下的状态完成对话，小诊所将为你开具一剂视频处方。</div>
+            <div class="start-sub">To Choose Thhs</div>
+            <div class="small-note">如果你不知道该看什么「坠」的时候，也许它能给出建议</div>
             <div class="double-buttons">
                 <button class="primary-btn" id="fullTestBtn">别管了，K社！</button>
                 <button class="primary-btn accent-btn" id="luckDrawBtn">遇事不决</button>
             </div>
-            <div class="footer-note">纯属娱乐 · 对症下药</div>
+            <div class="footer-note">纯属娱乐，仅供参考</div>
         `;
         document.getElementById('fullTestBtn')?.addEventListener('click', ()=>{
             state = { screen: 'question', answers: new Array(19).fill(-1), curQuestion: 0 };
@@ -425,27 +503,34 @@
     }
 
     function renderShake() {
+        // 随机选择图片和短语
+        const randomImg = SHAKE_IMAGES[Math.floor(Math.random() * SHAKE_IMAGES.length)];
+        const randomPhrase = SHAKE_PHRASES[Math.floor(Math.random() * SHAKE_PHRASES.length)];
         const app = document.getElementById('app');
         app.innerHTML = `
             <div style="text-align:center;">
                 <div class="shake-container">
-                    <div class="shake-emoji" id="shakeEmoji">🏺</div>
-                    <div style="margin: 0.5rem 0 0.8rem; font-size:0.9rem; color:#7f6e5b;">摇一签 · 问前程</div>
+                    <img src="${randomImg}" class="shake-img" id="shakeImg" alt="摇签图">
+                    <div class="shake-phrase" id="shakePhrase">${randomPhrase}</div>
                     <button class="random-btn" id="doShakeBtn">今日无事，不要元子</button>
                 </div>
                 <div class="back-link">
                     <button class="secondary" id="backStartFromShake">← 回到起点</button>
                 </div>
-                <div class="footer-note">随机一签，随缘而愈</div>
+                <div class="footer-note">纯属娱乐，仅供参考</div>
             </div>
         `;
         const btn = document.getElementById('doShakeBtn');
-        const emoji = document.getElementById('shakeEmoji');
+        const img = document.getElementById('shakeImg');
+        const phraseDiv = document.getElementById('shakePhrase');
         btn?.addEventListener('click', ()=>{
-            if(emoji) {
-                emoji.classList.add('shake-animation');
-                setTimeout(()=> emoji.classList.remove('shake-animation'), 500);
-            }
+            // 添加摇动动画
+            img.classList.add('shake-animation');
+            phraseDiv.classList.add('shake-animation');
+            setTimeout(()=> {
+                img.classList.remove('shake-animation');
+                phraseDiv.classList.remove('shake-animation');
+            }, 500);
             setTimeout(()=>{
                 const randomResult = ALL_COLLECTIONS[Math.floor(Math.random() * ALL_COLLECTIONS.length)];
                 state = { screen: 'result', resultData: randomResult, fromShake: true };
@@ -466,8 +551,11 @@
             <div style="margin-bottom:0.5rem; font-size:0.75rem; color:#b3a48f;">第 ${q+1} / ${QUESTIONS.length}</div>
             <div class="question-text">${QUESTIONS[q]}</div>
             <div class="options-group" id="optionsGroup">${optsHtml}</div>
-            <div class="back-link"><button class="secondary" id="backStartFromQ">⟳ 重新测评</button></div>
-            <div class="footer-note">选一剂对症之药</div>
+            <div class="back-link">
+                <button class="secondary" id="prevBtn">← 返回上一题</button>
+                <button class="secondary" id="resetBtn">⟳ 重新开始</button>
+            </div>
+            <div class="footer-note">纯属娱乐，仅供参考</div>
         `;
         document.querySelectorAll('.option-btn').forEach(btn=>{
             btn.addEventListener('click',(e)=>{
@@ -484,7 +572,15 @@
                 }
             });
         });
-        document.getElementById('backStartFromQ')?.addEventListener('click', ()=>{
+        document.getElementById('prevBtn')?.addEventListener('click', ()=>{
+            if(state.curQuestion > 0) {
+                state.curQuestion--;
+                render();
+            } else {
+                alert('已是第一题');
+            }
+        });
+        document.getElementById('resetBtn')?.addEventListener('click', ()=>{
             state = { screen: 'start' };
             render();
         });
@@ -493,26 +589,36 @@
     function renderResult() {
         const res = state.resultData;
         const biliButton = res.biliUrl ? `<a href="${res.biliUrl}" target="_blank" rel="noopener noreferrer" class="action-btn">▶ 去B站观看</a>` : '';
+        const coverHtml = res.cover ? 
+            `<div class="cover-placeholder"><img src="${res.cover}" alt="cover"></div>` : 
+            `<div class="cover-placeholder">暂无封面</div>`;
         const app = document.getElementById('app');
         app.innerHTML = `
-            <div style="text-align:center; margin-bottom:1rem;">🩻 坠了没处方笺</div>
-            <div class="result-box">
+            <div style="text-align:center; margin-bottom:1rem; font-weight:600; font-size:1.4rem;">坠终推荐</div>
+            <div class="result-box" id="resultCaptureArea">
                 <div class="prescription-name">${res.name}</div>
                 <div class="tag-line">${res.tags}</div>
-                <div class="collection-desc">📖 ${res.desc}</div>
+                ${coverHtml}
+                <div class="collection-desc">${res.desc}</div>
             </div>
             <div class="action-group">
                 ${biliButton}
-                <button class="action-btn" id="shareBtn">🔗 转发分享</button>
+                <button class="action-btn" id="shareImgBtn">📸 分享截图</button>
                 <button class="action-btn" id="restartBtn">🏠 回到起点</button>
             </div>
-            <div class="footer-note">对症下药，祝您愉快</div>
+            <div class="footer-note">纯属娱乐，仅供参考</div>
         `;
-        document.getElementById('shareBtn')?.addEventListener('click', ()=>{
-            const url = new URL(window.location.href);
-            url.searchParams.set('result', encodeURIComponent(res.name));
-            navigator.clipboard.writeText(url.toString()).then(()=> alert('链接已复制！'));
-        });
+        const shareBtn = document.getElementById('shareImgBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                const captureElement = document.getElementById('resultCaptureArea');
+                if (captureElement) {
+                    await shareResultScreenshot(captureElement, res.name);
+                } else {
+                    alert('截图区域加载失败');
+                }
+            });
+        }
         document.getElementById('restartBtn')?.addEventListener('click', ()=>{
             state = { screen: 'start' };
             render();
